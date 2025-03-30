@@ -15,14 +15,11 @@ const closeButton = document.querySelector('.close');
 const repairForm = document.getElementById('item-form');
 const currentYearSpan = document.getElementById('current-year');
 const lastUpdateSpan = document.getElementById('last-update');
-const filterWeekBtn = document.getElementById('filter-week');
-const filterMonthBtn = document.getElementById('filter-month');
 const filterAllBtn = document.getElementById('filter-all');
 const filterPendingBtn = document.getElementById('filter-pending');
-const filterInProgressBtn = document.getElementById('filter-in-progress');
 const filterCompletedBtn = document.getElementById('filter-completed');
 
-// Funciones de utilidad para fechas
+// Funciones de utilidad
 function formatDate(dateString) {
     try {
         const date = new Date(dateString);
@@ -49,29 +46,10 @@ function getCurrentDateTime() {
     return now.toISOString().slice(0, 16);
 }
 
-function daysSinceUpdate(dateString) {
-    try {
-        const updateDate = new Date(dateString);
-        const today = new Date();
-        const diffTime = today - updateDate;
-        return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    } catch (error) {
-        console.error('Error al calcular días:', error);
-        return 0;
-    }
-}
-
-function getDateStatus(days) {
-    if (days > 30) return 'date-old';
-    if (days <= 7) return 'date-recent';
-    return 'date-normal';
-}
-
 function getStatusText(status) {
     const statusMap = {
         'pending': 'Pendiente',
-        'in-progress': 'En progreso',
-        'completed': 'Completada'
+        'completed': 'Completo'
     };
     return statusMap[status] || status;
 }
@@ -84,17 +62,15 @@ function renderRepairs(items = repairs) {
         if (items.length === 0) {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td colspan="11" class="no-data">No hay reparaciones registradas</td>
+                <td colspan="10" class="no-data">No hay reparaciones registradas</td>
             `;
             repairsTable.appendChild(row);
             return;
         }
         
         items.forEach(repair => {
-            const days = daysSinceUpdate(repair.date);
-            const dateStatus = getDateStatus(days);
             const status = repair.status || 'pending';
-            const statusClass = `status-${status.replace(' ', '-')}`;
+            const statusClass = `status-${status}`;
             
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -109,8 +85,7 @@ function renderRepairs(items = repairs) {
                 <td class="observation-cell" title="${repair.observation || ''}">
                     ${repair.observation ? (repair.observation.substring(0, 30) + (repair.observation.length > 30 ? '...' : '')) : 'N/A'}
                 </td>
-                <td class="${dateStatus}">${formatDate(repair.date)}</td>
-                <td class="${dateStatus}">${days}</td>
+                <td>${formatDate(repair.date)}</td>
                 <td class="${statusClass}">${getStatusText(status)}</td>
                 <td class="actions">
                     <button class="edit" data-id="${repair.id}"><i class="fas fa-edit"></i></button>
@@ -134,27 +109,14 @@ function renderRepairs(items = repairs) {
     }
 }
 
-// Filtrar reparaciones por días
-function filterRepairs(daysThreshold = null) {
+// Filtrar reparaciones por estado
+function filterByStatus(status) {
     try {
-        if (daysThreshold === null) {
+        if (status === 'all') {
             renderRepairs();
             return;
         }
         
-        const filtered = repairs.filter(repair => {
-            return daysSinceUpdate(repair.date) <= daysThreshold;
-        });
-        
-        renderRepairs(filtered);
-    } catch (error) {
-        console.error('Error al filtrar reparaciones:', error);
-    }
-}
-
-// Filtrar reparaciones por estado
-function filterByStatus(status) {
-    try {
         const filtered = repairs.filter(repair => {
             return (repair.status || 'pending') === status;
         });
@@ -263,7 +225,7 @@ function exportToCSV() {
         let csv = 'Modelo,Serial,Cliente,Caso,Falla,Parte Dañada,Observación,Fecha Registro,Estado\n';
         
         repairs.forEach(repair => {
-            csv += `"${repair.model || ''}","${repair.serial || ''}","${repair.client || ''}","${repair.case || ''}","${repair.issue || ''}","${repair.damagedPart || ''}","${repair.observation || ''}","${formatDate(repair.date)}","${repair.status || 'pending'}"\n`;
+            csv += `"${repair.model || ''}","${repair.serial || ''}","${repair.client || ''}","${repair.case || ''}","${repair.issue || ''}","${repair.damagedPart || ''}","${repair.observation || ''}","${formatDate(repair.date)}","${getStatusText(repair.status || 'pending')}"\n`;
         });
         
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -409,7 +371,7 @@ function parseCSV(csvString) {
             damagedPart: entry['parte dañada'] || entry.parte || 'No especificada',
             observation: entry.observacion || entry.notes || '',
             date: entry.fecha || getCurrentDateTime(),
-            status: entry.estado || 'pending'
+            status: entry.estado === 'completo' ? 'completed' : 'pending'
         });
     }
     
@@ -534,11 +496,8 @@ printButton.addEventListener('click', () => {
 
 exportButton.addEventListener('click', exportToCSV);
 
-filterWeekBtn.addEventListener('click', () => filterRepairs(7));
-filterMonthBtn.addEventListener('click', () => filterRepairs(30));
-filterAllBtn.addEventListener('click', () => filterRepairs(null));
+filterAllBtn.addEventListener('click', () => filterByStatus('all'));
 filterPendingBtn.addEventListener('click', () => filterByStatus('pending'));
-filterInProgressBtn.addEventListener('click', () => filterByStatus('in-progress'));
 filterCompletedBtn.addEventListener('click', () => filterByStatus('completed'));
 
 // Inicialización
@@ -557,4 +516,5 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeunload', function() {
         saveRepairs();
     });
+});
 });
