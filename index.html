@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Reparaciones Nes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tools"></i> Registro de Reparaciones Nes</h1>
+            <div class="header-controls">
+                <div class="search-bar">
+                    <input type="text" id="search" placeholder="Buscar por modelo, serial o cliente...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="date-filters">
+                    <button id="filter-week" class="btn filter-btn">Última semana</button>
+                    <button id="filter-month" class="btn filter-btn">Último mes</button>
+                    <button id="filter-all" class="btn filter-btn">Todos</button>
+                    <button id="filter-pending" class="btn filter-btn"><i class="fas fa-clock"></i> Pendientes</button>
+                    <button id="filter-in-progress" class="btn filter-btn"><i class="fas fa-spinner"></i> En progreso</button>
+                    <button id="filter-completed" class="btn filter-btn"><i class="fas fa-check"></i> Completadas</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="inventory-actions">
+                <button id="add-item" class="btn primary"><i class="fas fa-plus"></i> Nueva Reparación</button>
+                <button id="print-list" class="btn"><i class="fas fa-print"></i> Imprimir</button>
+                <button id="export-csv" class="btn success"><i class="fas fa-file-export"></i> Exportar</button>
+                <button id="import-csv" class="btn info"><i class="fas fa-file-import"></i> Importar CSV</button>
+                <input type="file" id="csv-file" accept=".csv" style="display: none;">
+            </section>
+
+            <section class="inventory-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Modelo</th>
+                            <th>Serial</th>
+                            <th>Cliente</th>
+                            <th>Caso</th>
+                            <th>Falla</th>
+                            <th>Parte Dañada</th>
+                            <th>Observación</th>
+                            <th>Fecha Registro</th>
+                            <th>Días</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-items">
+                        <!-- Los registros se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer>
+            <p>Sistema de Reparaciones © <span id="current-year"></span> | Última actualización: <span id="last-update"></span></p>
+        </footer>
+    </div>
+
+    <!-- Modal para reparaciones -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title">Nueva Reparación</h2>
+            <form id="item-form">
+                <input type="hidden" id="item-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="item-model">Modelo</label>
+                        <input type="text" id="item-model" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-serial">Serial</label>
+                        <input type="text" id="item-serial" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="item-client">Cliente</label>
+                        <input type="text" id="item-client" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-case">Caso</label>
+                        <input type="text" id="item-case" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="item-issue">Falla Reportada</label>
+                    <textarea id="item-issue" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="item-damaged">Parte Dañada</label>
+                        <input type="text" id="item-damaged" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-date">Fecha Registro</label>
+                        <input type="datetime-local" id="item-date" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="item-status">Estado</label>
+                    <select id="item-status" required>
+                        <option value="pending">Pendiente</option>
+                        <option value="in-progress">En progreso</option>
+                        <option value="completed">Completada</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="item-notes">Observaciones</label>
+                    <textarea id="item-notes" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn primary">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
