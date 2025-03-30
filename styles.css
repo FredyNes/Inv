@@ -95,6 +95,12 @@ header {
     transform: translateY(-1px);
 }
 
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .btn.primary {
     background-color: var(--secondary);
     color: white;
@@ -248,6 +254,17 @@ tr:hover {
     font-weight: 500;
 }
 
+.form-group label:after {
+    content: '*';
+    color: var(--danger);
+    margin-left: 4px;
+    display: none;
+}
+
+.form-group label.required:after {
+    display: inline;
+}
+
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -261,6 +278,13 @@ tr:hover {
 .form-group textarea {
     min-height: 80px;
     resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
 }
 
 footer {
@@ -312,6 +336,39 @@ footer {
     text-align: center;
     padding: 20px;
     color: var(--gray);
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 4px;
+    color: white;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    max-width: 300px;
+}
+
+.toast.visible {
+    opacity: 1;
+}
+
+.toast.success {
+    background-color: var(--success);
+}
+
+.toast.error {
+    background-color: var(--danger);
 }
 
 @media (max-width: 768px) {
