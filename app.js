@@ -517,4 +517,3 @@ document.addEventListener('DOMContentLoaded', () => {
         saveRepairs();
     });
 });
-});
