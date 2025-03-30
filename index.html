@@ -31,6 +31,7 @@
                 <button id="export-csv" class="btn success"><i class="fas fa-file-export"></i> Exportar</button>
                 <button id="import-csv" class="btn info"><i class="fas fa-file-import"></i> Importar CSV</button>
                 <input type="file" id="csv-file" accept=".csv" style="display: none;">
+                <div id="import-progress"></div>
             </section>
 
             <section class="inventory-table">
@@ -53,6 +54,11 @@
                         <!-- Los registros se cargarán dinámicamente -->
                     </tbody>
                 </table>
+                <div class="pagination-controls">
+                    <button id="prev-page" class="btn"><i class="fas fa-chevron-left"></i></button>
+                    <span id="page-info">Página 1</span>
+                    <button id="next-page" class="btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
             </section>
         </main>
 
@@ -70,45 +76,59 @@
                 <input type="hidden" id="item-id">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="item-model">Modelo</label>
+                        <label for="item-model">Modelo*</label>
                         <input type="text" id="item-model" required>
                     </div>
                     <div class="form-group">
-                        <label for="item-serial">Serial</label>
+                        <label for="item-serial">Serial*</label>
                         <input type="text" id="item-serial" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="item-client">Cliente</label>
+                        <label for="item-client">Cliente*</label>
                         <input type="text" id="item-client" required>
                     </div>
                     <div class="form-group">
-                        <label for="item-case">Caso</label>
+                        <label for="item-case">Caso*</label>
                         <input type="text" id="item-case" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="item-issue">Falla Reportada</label>
+                    <label for="item-issue">Falla Reportada*</label>
                     <textarea id="item-issue" rows="3" required></textarea>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="item-damaged">Parte Dañada</label>
-                        <input type="text" id="item-damaged" required>
+                        <select id="item-damaged">
+                            <option value="">Seleccione una opción</option>
+                            <option value="Board">Board</option>
+                            <option value="Pantalla">Pantalla</option>
+                            <option value="Teclado">Teclado</option>
+                            <option value="Touchpad">Touchpad</option>
+                            <option value="Parlantes">Parlantes</option>
+                            <option value="Ventilador">Ventilador</option>
+                            <option value="Camara">Cámara</option>
+                            <option value="Ram">RAM</option>
+                            <option value="Disco">Disco</option>
+                            <option value="Puerto Usb">Puerto USB</option>
+                            <option value="Hdmi">HDMI</option>
+                            <option value="DisplayPort">DisplayPort</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="item-date">Fecha Registro</label>
-                        <input type="datetime-local" id="item-date" required>
+                        <label for="item-date">Fecha Registro*</label>
+                        <input type="date" id="item-date" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="item-status">Estado</label>
-                    <select id="item-status" required>
+                    <select id="item-status">
                         <option value="pending">Pendiente</option>
                         <option value="completed">Completo</option>
                     </select>
@@ -119,11 +139,16 @@
                     <textarea id="item-notes" rows="3"></textarea>
                 </div>
                 
-                <button type="submit" class="btn primary">Guardar</button>
+                <div class="form-actions">
+                    <button type="button" class="btn cancel" id="cancel-edit">Cancelar</button>
+                    <button type="submit" class="btn primary">Guardar</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js" type="module"></script>
 </body>
 </html>
