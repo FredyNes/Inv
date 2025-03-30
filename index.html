@@ -17,12 +17,9 @@
                     <button><i class="fas fa-search"></i></button>
                 </div>
                 <div class="date-filters">
-                    <button id="filter-week" class="btn filter-btn">Última semana</button>
-                    <button id="filter-month" class="btn filter-btn">Último mes</button>
                     <button id="filter-all" class="btn filter-btn">Todos</button>
                     <button id="filter-pending" class="btn filter-btn"><i class="fas fa-clock"></i> Pendientes</button>
-                    <button id="filter-in-progress" class="btn filter-btn"><i class="fas fa-spinner"></i> En progreso</button>
-                    <button id="filter-completed" class="btn filter-btn"><i class="fas fa-check"></i> Completadas</button>
+                    <button id="filter-completed" class="btn filter-btn"><i class="fas fa-check"></i> Completo</button>
                 </div>
             </div>
         </header>
@@ -48,7 +45,6 @@
                             <th>Parte Dañada</th>
                             <th>Observación</th>
                             <th>Fecha Registro</th>
-                            <th>Días</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -114,8 +110,7 @@
                     <label for="item-status">Estado</label>
                     <select id="item-status" required>
                         <option value="pending">Pendiente</option>
-                        <option value="in-progress">En progreso</option>
-                        <option value="completed">Completada</option>
+                        <option value="completed">Completo</option>
                     </select>
                 </div>
                 
