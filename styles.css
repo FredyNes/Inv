@@ -185,26 +185,8 @@ tr:hover {
     color: var(--danger);
 }
 
-.date-old {
-    color: var(--danger);
-    font-weight: bold;
-}
-
-.date-recent {
-    color: var(--success);
-}
-
-.date-normal {
-    color: var(--dark);
-}
-
 .status-pending {
     color: var(--warning);
-    font-weight: bold;
-}
-
-.status-in-progress {
-    color: var(--info);
     font-weight: bold;
 }
 
