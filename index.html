@@ -5,33 +5,380 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Reparaciones Nes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --info: #17a2b8;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .search-bar {
+            display: flex;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            font-size: 16px;
+        }
+
+        .search-bar button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .date-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn.primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn.success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn.warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn.danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn.info {
+            background-color: var(--info);
+            color: white;
+        }
+
+        .filter-btn {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        .filter-btn:hover {
+            background-color: #d5dbdb;
+        }
+
+        .inventory-table {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .actions button {
+            padding: 5px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: transparent;
+        }
+
+        .actions .edit {
+            color: var(--secondary);
+        }
+
+        .actions .delete {
+            color: var(--danger);
+        }
+
+        .date-old {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .date-recent {
+            color: var(--success);
+        }
+
+        .date-normal {
+            color: var(--dark);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 25px;
+            border-radius: 8px;
+            width: 700px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .close {
+            position: absolute;
+            right: 25px;
+            top: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .close:hover {
+            color: var(--dark);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 15px;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        #import-progress {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.3s ease;
+        }
+
+        #import-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        #import-result.success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        #import-result.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .header-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-bar {
+                min-width: 100%;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-tools"></i> Registro de Reparaciones Nes</h1>
+            <h1><i class="fas fa-tools"></i> Registro de Partes Soporte Nes</h1>
             <div class="header-controls">
                 <div class="search-bar">
                     <input type="text" id="search" placeholder="Buscar por modelo, serial o cliente...">
                     <button><i class="fas fa-search"></i></button>
                 </div>
                 <div class="date-filters">
+                    <button id="filter-week" class="btn filter-btn">Última semana</button>
+                    <button id="filter-month" class="btn filter-btn">Último mes</button>
                     <button id="filter-all" class="btn filter-btn">Todos</button>
-                    <button id="filter-pending" class="btn filter-btn"><i class="fas fa-clock"></i> Pendientes</button>
-                    <button id="filter-completed" class="btn filter-btn"><i class="fas fa-check"></i> Completo</button>
                 </div>
             </div>
         </header>
 
         <main>
             <section class="inventory-actions">
-                <button id="add-item" class="btn primary"><i class="fas fa-plus"></i> Nueva Reparación</button>
+                <button id="add-item" class="btn primary"><i class="fas fa-plus"></i> Agregar</button>
                 <button id="print-list" class="btn"><i class="fas fa-print"></i> Imprimir</button>
                 <button id="export-csv" class="btn success"><i class="fas fa-file-export"></i> Exportar</button>
                 <button id="import-csv" class="btn info"><i class="fas fa-file-import"></i> Importar CSV</button>
                 <input type="file" id="csv-file" accept=".csv" style="display: none;">
-                <div id="import-progress"></div>
             </section>
 
             <section class="inventory-table">
@@ -44,9 +391,8 @@
                             <th>Caso</th>
                             <th>Falla</th>
                             <th>Parte Dañada</th>
-                            <th>Observación</th>
-                            <th>Fecha Registro</th>
                             <th>Estado</th>
+                            <th>Fecha Registro</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -54,11 +400,6 @@
                         <!-- Los registros se cargarán dinámicamente -->
                     </tbody>
                 </table>
-                <div class="pagination-controls">
-                    <button id="prev-page" class="btn"><i class="fas fa-chevron-left"></i></button>
-                    <span id="page-info">Página 1</span>
-                    <button id="next-page" class="btn"><i class="fas fa-chevron-right"></i></button>
-                </div>
             </section>
         </main>
 
@@ -71,84 +412,598 @@
     <div id="item-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2 id="modal-title">Nueva Reparación</h2>
+            <h2 id="modal-title">Registro</h2>
             <form id="item-form">
                 <input type="hidden" id="item-id">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="item-model">Modelo*</label>
+                        <label for="item-model">Modelo</label>
                         <input type="text" id="item-model" required>
                     </div>
                     <div class="form-group">
-                        <label for="item-serial">Serial*</label>
+                        <label for="item-serial">Serial</label>
                         <input type="text" id="item-serial" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="item-client">Cliente*</label>
+                        <label for="item-client">Cliente</label>
                         <input type="text" id="item-client" required>
                     </div>
                     <div class="form-group">
-                        <label for="item-case">Caso*</label>
+                        <label for="item-case">Caso</label>
                         <input type="text" id="item-case" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="item-issue">Falla Reportada*</label>
+                    <label for="item-issue">Falla Reportada</label>
                     <textarea id="item-issue" rows="3" required></textarea>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="item-damaged">Parte Dañada</label>
-                        <select id="item-damaged">
+                        <select id="item-damaged" required>
                             <option value="">Seleccione una opción</option>
                             <option value="Board">Board</option>
-                            <option value="Pantalla">Pantalla</option>
                             <option value="Teclado">Teclado</option>
+                            <option value="Pantalla">Pantalla</option>
                             <option value="Touchpad">Touchpad</option>
-                            <option value="Parlantes">Parlantes</option>
-                            <option value="Ventilador">Ventilador</option>
                             <option value="Camara">Cámara</option>
-                            <option value="Ram">RAM</option>
+                            <option value="Parlantes">Parlantes</option>
                             <option value="Disco">Disco</option>
                             <option value="Puerto Usb">Puerto USB</option>
                             <option value="Hdmi">HDMI</option>
-                            <option value="DisplayPort">DisplayPort</option>
+                            <option value="Displayport">DisplayPort</option>
+                            <option value="Puerto Tipo C">Puerto Tipo C</option>
+                            <option value="Puerto de Carga">Puerto de Carga</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="item-date">Fecha Registro*</label>
+                        <label for="item-date">Fecha Registro</label>
                         <input type="date" id="item-date" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="item-status">Estado</label>
-                    <select id="item-status">
-                        <option value="pending">Pendiente</option>
-                        <option value="completed">Completo</option>
+                    <label for="item-notes">Estado</label>
+                    <select id="item-notes" required>
+                        <option value="">Seleccione estado</option>
+                        <option value="Completo">Completo</option>
+                        <option value="Pendiente">Pendiente</option>
                     </select>
                 </div>
                 
-                <div class="form-group">
-                    <label for="item-notes">Observaciones</label>
-                    <textarea id="item-notes" rows="3"></textarea>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn cancel" id="cancel-edit">Cancelar</button>
-                    <button type="submit" class="btn primary">Guardar</button>
-                </div>
+                <button type="submit" class="btn primary">Guardar</button>
             </form>
         </div>
     </div>
 
-    <div id="toast" class="toast"></div>
+    <script>
+        // Base de datos inicial para reparaciones
+        let repairs = [];
+        const STORAGE_KEY = 'repairs_nes_data';
 
-    <script src="app.js" type="module"></script>
+        // Elementos del DOM
+        const repairsTable = document.getElementById('inventory-items');
+        const searchInput = document.getElementById('search');
+        const addButton = document.getElementById('add-item');
+        const printButton = document.getElementById('print-list');
+        const exportButton = document.getElementById('export-csv');
+        const importButton = document.getElementById('import-csv');
+        const fileInput = document.getElementById('csv-file');
+        const modal = document.getElementById('item-modal');
+        const closeButton = document.querySelector('.close');
+        const repairForm = document.getElementById('item-form');
+        const currentYearSpan = document.getElementById('current-year');
+        const lastUpdateSpan = document.getElementById('last-update');
+        const filterWeekBtn = document.getElementById('filter-week');
+        const filterMonthBtn = document.getElementById('filter-month');
+        const filterAllBtn = document.getElementById('filter-all');
+
+        // Funciones de utilidad para fechas
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    throw new Error('Fecha inválida');
+                }
+                const options = {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                };
+                return date.toLocaleDateString('es-ES', options);
+            } catch (error) {
+                console.error('Error al formatear fecha:', error);
+                return 'Fecha inválida';
+            }
+        }
+
+        function getCurrentDateTime() {
+            const now = new Date();
+            return now.toISOString().split('T')[0];
+        }
+
+        // Renderizar la tabla de reparaciones
+        function renderRepairs(items = repairs) {
+            try {
+                repairsTable.innerHTML = '';
+                
+                if (items.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="9" class="no-data">No hay reparaciones registradas</td>
+                    `;
+                    repairsTable.appendChild(row);
+                    return;
+                }
+                
+                items.forEach(repair => {
+                    const statusClass = repair.observation === 'Completo' ? 'date-recent' : 'date-old';
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${repair.model || 'N/A'}</td>
+                        <td>${repair.serial || 'N/A'}</td>
+                        <td>${repair.client || 'N/A'}</td>
+                        <td>${repair.case || 'N/A'}</td>
+                        <td class="issue-cell" title="${repair.issue || ''}">
+                            ${repair.issue ? (repair.issue.substring(0, 30) + (repair.issue.length > 30 ? '...' : '')) : 'N/A'}
+                        </td>
+                        <td>${repair.damagedPart || 'N/A'}</td>
+                        <td class="${statusClass}">${repair.observation || 'N/A'}</td>
+                        <td>${formatDate(repair.date)}</td>
+                        <td class="actions">
+                            <button class="edit" data-id="${repair.id}"><i class="fas fa-edit"></i></button>
+                            <button class="delete" data-id="${repair.id}"><i class="fas fa-trash"></i></button>
+                        </td>
+                    `;
+                    
+                    repairsTable.appendChild(row);
+                });
+                
+                // Agregar eventos a los botones de acción
+                document.querySelectorAll('.edit').forEach(btn => {
+                    btn.addEventListener('click', () => editRepair(btn.dataset.id));
+                });
+                
+                document.querySelectorAll('.delete').forEach(btn => {
+                    btn.addEventListener('click', () => deleteRepair(btn.dataset.id));
+                });
+            } catch (error) {
+                console.error('Error al renderizar reparaciones:', error);
+            }
+        }
+
+        // Filtrar reparaciones
+        function filterRepairs(daysThreshold = null) {
+            try {
+                if (daysThreshold === null) {
+                    renderRepairs();
+                    return;
+                }
+                
+                const filtered = repairs.filter(repair => {
+                    const repairDate = new Date(repair.date);
+                    const today = new Date();
+                    const diffTime = today - repairDate;
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    return diffDays <= daysThreshold;
+                });
+                
+                renderRepairs(filtered);
+            } catch (error) {
+                console.error('Error al filtrar reparaciones:', error);
+            }
+        }
+
+        // Guardar reparaciones en localStorage
+        function saveRepairs() {
+            try {
+                const dataToSave = JSON.stringify({
+                    repairs: repairs,
+                    lastUpdate: new Date().toISOString()
+                });
+                
+                localStorage.setItem(STORAGE_KEY, dataToSave);
+                sessionStorage.setItem(STORAGE_KEY, dataToSave); // Backup
+                lastUpdateSpan.textContent = formatDate(new Date());
+                console.log('Datos guardados correctamente');
+            } catch (error) {
+                console.error('Error al guardar reparaciones:', error);
+                if (error.name === 'QuotaExceededError') {
+                    alert('Advertencia: Se ha excedido el espacio de almacenamiento. Algunos datos podrían no guardarse.');
+                }
+            }
+        }
+
+        // Cargar reparaciones desde localStorage
+        function loadRepairs() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsedData = JSON.parse(saved);
+                    repairs = parsedData.repairs || [];
+                    if (parsedData.lastUpdate) {
+                        lastUpdateSpan.textContent = formatDate(parsedData.lastUpdate);
+                    }
+                    console.log('Datos cargados correctamente');
+                } else {
+                    // Datos de ejemplo si no hay nada guardado
+                    repairs = [{
+                        id: "REP-" + Date.now().toString().slice(-4),
+                        model: "Ejemplo Modelo",
+                        serial: "ABC123XYZ",
+                        client: "Cliente Ejemplo",
+                        case: "Caso de prueba",
+                        issue: "Falla de ejemplo para demostración",
+                        damagedPart: "Board",
+                        observation: "Pendiente",
+                        date: getCurrentDateTime()
+                    }];
+                    saveRepairs();
+                }
+            } catch (error) {
+                console.error('Error al cargar reparaciones:', error);
+                repairs = [];
+            }
+        }
+
+        // Editar reparación
+        function editRepair(id) {
+            try {
+                const repair = repairs.find(repair => repair.id === id);
+                if (!repair) {
+                    console.error('Reparación no encontrada:', id);
+                    return;
+                }
+                
+                document.getElementById('modal-title').textContent = 'Editar Reparación';
+                document.getElementById('item-id').value = repair.id;
+                document.getElementById('item-model').value = repair.model || '';
+                document.getElementById('item-serial').value = repair.serial || '';
+                document.getElementById('item-client').value = repair.client || '';
+                document.getElementById('item-case').value = repair.case || '';
+                document.getElementById('item-issue').value = repair.issue || '';
+                document.getElementById('item-damaged').value = repair.damagedPart || '';
+                document.getElementById('item-notes').value = repair.observation || '';
+                document.getElementById('item-date').value = repair.date ? repair.date.slice(0, 10) : getCurrentDateTime();
+                
+                modal.style.display = 'block';
+            } catch (error) {
+                console.error('Error al editar reparación:', error);
+            }
+        }
+
+        // Eliminar reparación
+        function deleteRepair(id) {
+            try {
+                if (confirm('¿Estás seguro de eliminar este registro de reparación?')) {
+                    repairs = repairs.filter(repair => repair.id !== id);
+                    saveRepairs();
+                    renderRepairs();
+                }
+            } catch (error) {
+                console.error('Error al eliminar reparación:', error);
+            }
+        }
+
+        // Exportar a CSV
+        function exportToCSV() {
+            try {
+                let csv = 'Modelo,Serial,Cliente,Caso,Falla,Parte Dañada,Estado,Fecha Registro\n';
+                
+                repairs.forEach(repair => {
+                    // Escapar comillas en los valores
+                    const escapeCsv = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
+                    
+                    csv += [
+                        escapeCsv(repair.model),
+                        escapeCsv(repair.serial),
+                        escapeCsv(repair.client),
+                        escapeCsv(repair.case),
+                        escapeCsv(repair.issue),
+                        escapeCsv(repair.damagedPart),
+                        escapeCsv(repair.observation),
+                        escapeCsv(formatDate(repair.date))
+                    ].join(',') + '\n';
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `reparaciones_nes_${new Date().toISOString().slice(0,10)}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Error al exportar a CSV:', error);
+                alert('Error al generar el archivo CSV');
+            }
+        }
+
+        // Función para analizar el CSV (mejorada para manejar comillas)
+        function parseCSV(csvString) {
+            const lines = csvString.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                throw new Error('El archivo CSV está vacío o no tiene el formato correcto');
+            }
+            
+            // Obtener cabeceras limpiando comillas y espacios
+            const headers = lines[0].split(',').map(h => 
+                h.trim().replace(/^"(.*)"$/, '$1').replace(/""/g, '"').toLowerCase()
+            );
+            
+            // Validar cabeceras mínimas requeridas
+            const requiredHeaders = ['modelo', 'serial', 'cliente'];
+            const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+            
+            if (missingHeaders.length > 0) {
+                throw new Error(`Faltan columnas requeridas: ${missingHeaders.join(', ')}`);
+            }
+            
+            // Procesar líneas de datos
+            const results = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                // Dividir la línea considerando comas dentro de campos entrecomillados
+                const currentLine = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                const entry = {};
+                
+                for (let j = 0; j < headers.length; j++) {
+                    if (j < currentLine.length) {
+                        // Limpiar comillas y espacios
+                        let value = currentLine[j].trim();
+                        // Eliminar comillas exteriores si existen
+                        if (value.startsWith('"') && value.endsWith('"')) {
+                            value = value.substring(1, value.length - 1);
+                        }
+                        // Reemplazar comillas dobles por simples
+                        value = value.replace(/""/g, '"');
+                        entry[headers[j]] = value;
+                    } else {
+                        entry[headers[j]] = '';
+                    }
+                }
+                
+                // Mapear a nuestra estructura de datos
+                results.push({
+                    id: `IMP-${Date.now()}-${i}`,
+                    model: entry.modelo || '',
+                    serial: entry.serial || '',
+                    client: entry.cliente || '',
+                    case: entry.caso || 'Importado',
+                    issue: entry.falla || entry.issue || 'Sin descripción',
+                    damagedPart: entry['parte dañada'] || entry.parte || 'Board',
+                    observation: entry.estado || entry.observation || 'Pendiente',
+                    date: entry.fecha || getCurrentDateTime()
+                });
+            }
+            
+            return results;
+        }
+
+        // Función para validar datos importados
+        function validateImportedData(data) {
+            const errors = [];
+            
+            data.forEach((item, index) => {
+                if (!item.model || !item.serial || !item.client) {
+                    errors.push(`Fila ${index + 1}: Faltan datos requeridos (modelo, serial o cliente)`);
+                }
+                
+                if (item.serial && repairs.some(r => r.serial === item.serial)) {
+                    errors.push(`Fila ${index + 1}: El serial ${item.serial} ya existe`);
+                }
+            });
+            
+            if (errors.length > 0) {
+                throw new Error(`Errores de validación:\n${errors.join('\n')}`);
+            }
+        }
+
+        // Función para fusionar datos importados
+        function mergeImportedData(newData) {
+            // Filtrar duplicados por serial
+            const uniqueNewData = newData.filter(newItem => 
+                !repairs.some(existingItem => existingItem.serial === newItem.serial)
+            );
+            
+            repairs = [...repairs, ...uniqueNewData];
+        }
+
+        // Configurar la importación de CSV
+        function setupCSVImport() {
+            importButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const progressDiv = document.createElement('div');
+                progressDiv.id = 'import-progress';
+                progressDiv.innerHTML = `
+                    <p>Procesando archivo...</p>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div id="import-result"></div>
+                `;
+                importButton.insertAdjacentElement('afterend', progressDiv);
+                
+                progressDiv.style.display = 'block';
+                const progressBar = progressDiv.querySelector('.progress-bar-fill');
+                const resultDiv = document.getElementById('import-result');
+                resultDiv.style.display = 'none';
+                
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    try {
+                        progressBar.style.width = '30%';
+                        const csvData = event.target.result;
+                        const parsedData = parseCSV(csvData);
+                        
+                        progressBar.style.width = '60%';
+                        validateImportedData(parsedData);
+                        
+                        progressBar.style.width = '80%';
+                        mergeImportedData(parsedData);
+                        
+                        progressBar.style.width = '100%';
+                        resultDiv.className = 'success';
+                        resultDiv.innerHTML = `
+                            <p><i class="fas fa-check-circle"></i> Importación exitosa!</p>
+                            <p>Se importaron ${parsedData.length} registros.</p>
+                        `;
+                        resultDiv.style.display = 'block';
+                        
+                        renderRepairs();
+                        saveRepairs();
+                        fileInput.value = '';
+                        
+                        setTimeout(() => {
+                            progressDiv.style.display = 'none';
+                        }, 3000);
+                        
+                    } catch (error) {
+                        progressBar.style.width = '100%';
+                        resultDiv.className = 'error';
+                        resultDiv.innerHTML = `
+                            <p><i class="fas fa-exclamation-triangle"></i> Error en importación</p>
+                            <p>${error.message}</p>
+                        `;
+                        resultDiv.style.display = 'block';
+                        console.error('Error al importar CSV:', error);
+                    }
+                };
+                
+                reader.onerror = () => {
+                    progressBar.style.width = '100%';
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = '<p>Error al leer el archivo</p>';
+                    resultDiv.style.display = 'block';
+                };
+                
+                reader.readAsText(file);
+            });
+        }
+
+        // Manejar el formulario
+        repairForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            try {
+                const repairData = {
+                    id: document.getElementById('item-id').value || `REP-${Date.now().toString().slice(-4)}`,
+                    model: document.getElementById('item-model').value.trim(),
+                    serial: document.getElementById('item-serial').value.trim(),
+                    client: document.getElementById('item-client').value.trim(),
+                    case: document.getElementById('item-case').value.trim(),
+                    issue: document.getElementById('item-issue').value.trim(),
+                    damagedPart: document.getElementById('item-damaged').value,
+                    observation: document.getElementById('item-notes').value,
+                    date: document.getElementById('item-date').value || getCurrentDateTime()
+                };
+                
+                // Validación básica
+                if (!repairData.model || !repairData.serial || !repairData.client || 
+                    !repairData.damagedPart || !repairData.observation) {
+                    alert('Por favor complete todos los campos obligatorios');
+                    return;
+                }
+                
+                const existingId = document.getElementById('item-id').value;
+                
+                if (existingId) {
+                    // Actualizar reparación existente
+                    const index = repairs.findIndex(repair => repair.id === existingId);
+                    if (index !== -1) {
+                        repairs[index] = repairData;
+                    }
+                } else {
+                    // Añadir nueva reparación
+                    repairs.push(repairData);
+                }
+                
+                saveRepairs();
+                renderRepairs();
+                modal.style.display = 'none';
+            } catch (error) {
+                console.error('Error al procesar el formulario:', error);
+                alert('Ocurrió un error al guardar los datos');
+            }
+        });
+
+        // Event Listeners
+        addButton.addEventListener('click', () => {
+            document.getElementById('modal-title').textContent = 'Registro';
+            repairForm.reset();
+            document.getElementById('item-id').value = '';
+            document.getElementById('item-date').value = getCurrentDateTime();
+            modal.style.display = 'block';
+        });
+
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            try {
+                const searchTerm = e.target.value.toLowerCase();
+                const filtered = repairs.filter(repair => 
+                    (repair.model && repair.model.toLowerCase().includes(searchTerm)) || 
+                    (repair.serial && repair.serial.toLowerCase().includes(searchTerm)) ||
+                    (repair.client && repair.client.toLowerCase().includes(searchTerm)) ||
+                    (repair.case && repair.case.toLowerCase().includes(searchTerm)) ||
+                    (repair.issue && repair.issue.toLowerCase().includes(searchTerm)) ||
+                    (repair.observation && repair.observation.toLowerCase().includes(searchTerm))
+                );
+                renderRepairs(filtered);
+            } catch (error) {
+                console.error('Error al buscar:', error);
+            }
+        });
+
+        printButton.addEventListener('click', () => {
+            window.print();
+        });
+
+        exportButton.addEventListener('click', exportToCSV);
+
+        filterWeekBtn.addEventListener('click', () => filterRepairs(7));
+        filterMonthBtn.addEventListener('click', () => filterRepairs(30));
+        filterAllBtn.addEventListener('click', () => filterRepairs(null));
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            currentYearSpan.textContent = new Date().getFullYear();
+            loadRepairs();
+            renderRepairs();
+            setupCSVImport();
+            
+            if (typeof(Storage) === 'undefined') {
+                alert('Advertencia: Tu navegador no soporta localStorage. Los datos solo se guardarán durante esta sesión.');
+            }
+            
+            window.addEventListener('beforeunload', function() {
+                saveRepairs();
+            });
+        });
+    </script>
 </body>
 </html>
