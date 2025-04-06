@@ -654,5 +654,149 @@ function showMessage(element, message, type) {
         element.style.color = '#383d41';
     }
 }
+
+    function saveConfig() {
+    githubConfig = {
+        owner: githubOwnerInput.value.trim(),
+        repo: githubRepoInput.value.trim(),
+        token: githubTokenInput.value.trim()
+    };
     
+    if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+        showMessage(configStatus, 'Todos los campos son requeridos', 'error');
+        return;
+    }
+    
+    localStorage.setItem(CONFIG_KEY, JSON.stringify(githubConfig));
+    showMessage(configStatus, 'Configuración guardada correctamente. Cargando datos...', 'success');
+    
+    // Ocultar el panel después de 2 segundos y cargar datos
+    setTimeout(() => {
+        configPanel.style.display = 'none';
+        loadDataFromGitHub();
+    }, 2000);
+}
+    function loadConfig() {
+    const config = localStorage.getItem(CONFIG_KEY);
+    if (config) {
+        githubConfig = JSON.parse(config);
+        githubOwnerInput.value = githubConfig.owner;
+        githubRepoInput.value = githubConfig.repo;
+        githubTokenInput.value = githubConfig.token;
+    }
+}
+    async function loadDataFromGitHub() {
+    if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+        showMessage(syncStatus, 'Configuración de GitHub incompleta. Usando datos locales.', 'error');
+        loadFromLocalStorage();
+        return;
+    }
+    
+    showMessage(syncStatus, 'Cargando datos desde GitHub...', 'info');
+    
+    try {
+        const response = await fetch(
+            `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data.json`,
+            {
+                headers: {
+                    'Authorization': `token ${githubConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            }
+        );
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Error HTTP: 401 - Autenticación fallida');
+            }
+            if (response.status === 404) {
+                showMessage(syncStatus, 'No se encontró archivo de datos. Se creará uno nuevo al guardar.', 'info');
+                loadFromLocalStorage();
+                return;
+            }
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const content = JSON.parse(atob(data.content));
+        repairs = content.reparaciones || [];
+        renderRepairs();
+        showMessage(syncStatus, 'Datos cargados correctamente desde GitHub.', 'success');
+        saveToLocalStorage(); // Guardar localmente como respaldo
+        
+    } catch (error) {
+        console.error('Error al cargar datos de GitHub:', error);
+        showMessage(syncStatus, `Error al cargar datos: ${error.message}. Usando datos locales.`, 'error');
+        loadFromLocalStorage();
+    }
+}
+    async function saveDataToGitHub() {
+    if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+        showMessage(syncStatus, 'Configuración de GitHub incompleta. Guardando localmente.', 'error');
+        saveToLocalStorage();
+        return;
+    }
+    
+    showMessage(syncStatus, 'Sincronizando con GitHub...', 'info');
+    
+    try {
+        let sha = '';
+        try {
+            const getResponse = await fetch(
+                `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data.json`,
+                {
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                }
+            );
+            
+            if (getResponse.ok) {
+                const fileData = await getResponse.json();
+                sha = fileData.sha;
+            }
+        } catch (e) {
+            console.log('Archivo no existe aún, se creará uno nuevo');
+        }
+        
+        const content = {
+            reparaciones: repairs
+        };
+        
+        const message = `Actualización de datos ${new Date().toISOString()}`;
+        const contentEncoded = btoa(JSON.stringify(content, null, 2));
+        
+        const response = await fetch(
+            `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data.json`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${githubConfig.token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: message,
+                    content: contentEncoded,
+                    sha: sha || undefined
+                })
+            }
+        );
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Error al guardar en GitHub');
+        }
+        
+        console.log('Datos guardados en GitHub correctamente');
+        showMessage(syncStatus, 'Datos sincronizados con GitHub correctamente.', 'success');
+        saveToLocalStorage(); // También guarda localmente como respaldo
+        
+    } catch (error) {
+        console.error('Error al guardar en GitHub:', error);
+        showMessage(syncStatus, `Error al sincronizar: ${error.message}. Guardando localmente.`, 'error');
+        saveToLocalStorage(); // Si falla GitHub, guarda solo localmente
+    }
+}
 });
