@@ -11,14 +11,254 @@
       "notes": "nada"
     },
     {
-      "id": "1743968781161",
-      "model": "x1",
-      "serial": "r9065421",
+      "id": 1743968892363,
+      "model": "v14",
+      "serial": "r9012345",
       "client": "sanitas",
-      "damagedPart": "Batería",
-      "status": "Completo",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
       "date": "2025-04-06",
-      "notes": "ok"
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892364,
+      "model": "v15",
+      "serial": "r9012346",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-07",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892365,
+      "model": "v16",
+      "serial": "r9012347",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-08",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892366,
+      "model": "v17",
+      "serial": "r9012348",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-09",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892367,
+      "model": "v18",
+      "serial": "r9012349",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-10",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892368,
+      "model": "v19",
+      "serial": "r9012350",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-11",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892369,
+      "model": "v20",
+      "serial": "r9012351",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-12",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892370,
+      "model": "v21",
+      "serial": "r9012352",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-13",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892371,
+      "model": "v22",
+      "serial": "r9012353",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-14",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892372,
+      "model": "v23",
+      "serial": "r9012354",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-15",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892374,
+      "model": "v24",
+      "serial": "r9012355",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-16",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892375,
+      "model": "v25",
+      "serial": "r9012356",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-17",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892376,
+      "model": "v26",
+      "serial": "r9012357",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-18",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892377,
+      "model": "v27",
+      "serial": "r9012358",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-19",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892378,
+      "model": "v28",
+      "serial": "r9012359",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-20",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892379,
+      "model": "v29",
+      "serial": "r9012360",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-21",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892380,
+      "model": "v30",
+      "serial": "r9012361",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-22",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892381,
+      "model": "v31",
+      "serial": "r9012362",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-23",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892382,
+      "model": "v32",
+      "serial": "r9012363",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-24",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892383,
+      "model": "v33",
+      "serial": "r9012364",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-25",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892384,
+      "model": "v34",
+      "serial": "r9012365",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-26",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892385,
+      "model": "v35",
+      "serial": "r9012366",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-27",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892386,
+      "model": "v36",
+      "serial": "r9012367",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-28",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892387,
+      "model": "v37",
+      "serial": "r9012368",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-29",
+      "notes": "nada"
+    },
+    {
+      "id": 1743968892388,
+      "model": "v38",
+      "serial": "r9012369",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-30",
+      "notes": "nada"
     }
   ]
 }
