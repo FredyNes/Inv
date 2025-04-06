@@ -9,6 +9,16 @@
       "status": "Pendiente",
       "date": "2025-04-06",
       "notes": "nada"
+    },
+    {
+      "id": "1743968781161",
+      "model": "x1",
+      "serial": "r9065421",
+      "client": "sanitas",
+      "damagedPart": "Batería",
+      "status": "Completo",
+      "date": "2025-04-06",
+      "notes": "ok"
     }
   ]
 }
