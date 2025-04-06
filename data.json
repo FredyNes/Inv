@@ -1,0 +1,14 @@
+{
+  "reparaciones": [
+    {
+      "id": "1743968722533",
+      "model": "v14",
+      "serial": "r9012345",
+      "client": "sanitas",
+      "damagedPart": "Pantalla",
+      "status": "Pendiente",
+      "date": "2025-04-06",
+      "notes": "nada"
+    }
+  ]
+}
