@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión de Reparaciones Nes</title>
+    <title>Sistema de Gestión de Reparaciones</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #2c3e50;
@@ -35,9 +36,6 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         header {
@@ -46,6 +44,7 @@
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .header-controls {
@@ -53,6 +52,7 @@
             flex-wrap: wrap;
             gap: 15px;
             margin-top: 15px;
+            align-items: center;
         }
 
         .search-bar {
@@ -66,7 +66,7 @@
             padding: 10px;
             border: none;
             border-radius: 4px 0 0 4px;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .search-bar button {
@@ -76,13 +76,7 @@
             padding: 0 15px;
             border-radius: 0 4px 4px 0;
             cursor: pointer;
-            font-size: 16px;
-        }
-
-        .date-filters {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            transition: background-color 0.3s;
         }
 
         .btn {
@@ -93,33 +87,12 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            font-weight: 500;
-            transition: all 0.3s ease;
             font-size: 14px;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            transition: all 0.3s;
         }
 
         .btn.primary {
             background-color: var(--secondary);
-            color: white;
-        }
-
-        .btn.success {
-            background-color: var(--success);
-            color: white;
-        }
-
-        .btn.warning {
-            background-color: var(--warning);
-            color: white;
-        }
-
-        .btn.danger {
-            background-color: var(--danger);
             color: white;
         }
 
@@ -128,33 +101,28 @@
             color: white;
         }
 
-        .filter-btn {
-            background-color: var(--light);
-            color: var(--dark);
+        .btn.warning {
+            background-color: var(--warning);
+            color: white;
         }
 
-        .filter-btn:hover {
-            background-color: #d5dbdb;
-        }
-
-        .inventory-table {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            overflow-x: auto;
+        .btn.success {
+            background-color: var(--success);
+            color: white;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
-            font-size: 14px;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         th, td {
-            padding: 12px 10px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
@@ -164,46 +132,15 @@
             color: white;
             position: sticky;
             top: 0;
-            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
 
         tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        .actions {
-            display: flex;
-            gap: 5px;
-            white-space: nowrap;
-        }
-
-        .actions button {
-            padding: 5px 8px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            background-color: transparent;
-        }
-
-        .actions .edit {
-            color: var(--secondary);
-        }
-
-        .actions .delete {
-            color: var(--danger);
-        }
-
-        .date-old {
-            color: var(--danger);
-            font-weight: bold;
-        }
-
-        .date-recent {
-            color: var(--success);
-        }
-
-        .date-normal {
-            color: var(--dark);
+            background-color: #f1f1f1;
         }
 
         .modal {
@@ -215,108 +152,66 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            overflow: auto;
         }
 
         .modal-content {
             background-color: white;
-            margin: 2% auto;
+            margin: 5% auto;
             padding: 25px;
+            width: 90%;
+            max-width: 600px;
             border-radius: 8px;
-            width: 700px;
-            max-width: 95%;
-            max-height: 90vh;
-            overflow-y: auto;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
-        .close {
-            position: absolute;
-            right: 25px;
-            top: 15px;
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        .close:hover {
-            color: var(--dark);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
         .form-group {
-            flex: 1;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 15px;
-            color: var(--gray);
             font-size: 14px;
         }
 
-        #import-progress {
-            margin-top: 10px;
-            display: none;
+        .action-buttons {
+            display: flex;
+            gap: 8px;
         }
 
-        .progress-bar {
-            height: 20px;
-            background-color: #e9ecef;
+        .action-btn {
+            padding: 8px;
+            border: none;
             border-radius: 4px;
-            overflow: hidden;
+            cursor: pointer;
         }
 
-        .progress-bar-fill {
-            height: 100%;
-            background-color: #28a745;
-            transition: width 0.3s ease;
+        .edit-btn {
+            background-color: var(--info);
+            color: white;
         }
 
-        #import-result {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
+        .delete-btn {
+            background-color: var(--danger);
+            color: white;
         }
 
-        #import-result.success {
-            background-color: #d4edda;
-            color: #155724;
-            display: block;
-        }
-
-        #import-result.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            display: block;
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
         }
 
         .no-data {
@@ -325,97 +220,140 @@
             color: var(--gray);
         }
 
+        .chart-container {
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        .config-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+        }
+
+        .config-panel h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .config-input {
+            margin-bottom: 15px;
+        }
+
+        .config-input label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .config-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .status-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
         @media (max-width: 768px) {
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
             .header-controls {
                 flex-direction: column;
-                gap: 10px;
             }
             
             .search-bar {
-                min-width: 100%;
+                width: 100%;
             }
             
             .modal-content {
                 width: 95%;
+                margin: 10% auto;
                 padding: 15px;
-            }
-            
-            table {
-                font-size: 12px;
-            }
-            
-            th, td {
-                padding: 8px 6px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Panel de configuración de GitHub -->
+        <div class="config-panel" id="config-panel">
+            <h3><i class="fas fa-cog"></i> Configuración de GitHub</h3>
+            <div class="config-input">
+                <label for="github-owner">Nombre de usuario de GitHub</label>
+                <input type="text" id="github-owner" placeholder="tu_usuario">
+            </div>
+            <div class="config-input">
+                <label for="github-repo">Nombre del repositorio</label>
+                <input type="text" id="github-repo" placeholder="reparaciones-db">
+            </div>
+            <div class="config-input">
+                <label for="github-token">Token de acceso personal</label>
+                <input type="password" id="github-token" placeholder="ghp_tu_token">
+                <small>Crea un token en GitHub con permisos "repo"</small>
+            </div>
+            <button id="save-config" class="btn primary"><i class="fas fa-save"></i> Guardar Configuración</button>
+            <div id="config-status" class="status-message"></div>
+        </div>
+
         <header>
-            <h1><i class="fas fa-tools"></i> Registro de Partes Soporte Nes</h1>
+            <h1><i class="fas fa-tools"></i> Registro de Reparaciones</h1>
             <div class="header-controls">
                 <div class="search-bar">
-                    <input type="text" id="search" placeholder="Buscar por modelo, serial o cliente...">
+                    <input type="text" id="search" placeholder="Buscar...">
                     <button><i class="fas fa-search"></i></button>
                 </div>
-                <div class="date-filters">
-                    <button id="filter-week" class="btn filter-btn">Última semana</button>
-                    <button id="filter-month" class="btn filter-btn">Último mes</button>
-                    <button id="filter-all" class="btn filter-btn">Todos</button>
-                </div>
+                <button id="add-item" class="btn primary"><i class="fas fa-plus"></i> Agregar</button>
+                <button id="stats-btn" class="btn info"><i class="fas fa-chart-bar"></i> Estadísticas</button>
+                <button id="import-csv" class="btn warning"><i class="fas fa-file-import"></i> Importar CSV</button>
+                <button id="export-csv" class="btn success"><i class="fas fa-file-export"></i> Exportar CSV</button>
+                <input type="file" id="csv-file" accept=".csv" style="display: none;">
             </div>
         </header>
 
-        <main>
-            <section class="inventory-actions">
-                <button id="add-item" class="btn primary"><i class="fas fa-plus"></i> Agregar</button>
-                <button id="print-list" class="btn"><i class="fas fa-print"></i> Imprimir</button>
-                <button id="export-csv" class="btn success"><i class="fas fa-file-export"></i> Exportar</button>
-                <button id="import-csv" class="btn info"><i class="fas fa-file-import"></i> Importar CSV</button>
-                <input type="file" id="csv-file" accept=".csv" style="display: none;">
-            </section>
+        <div id="sync-status" class="status-message"></div>
 
-            <section class="inventory-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Modelo</th>
-                            <th>Serial</th>
-                            <th>Cliente</th>
-                            <th>Caso</th>
-                            <th>Falla</th>
-                            <th>Parte Dañada</th>
-                            <th>Estado</th>
-                            <th>Fecha Registro</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="inventory-items">
-                        <!-- Los registros se cargarán dinámicamente -->
-                    </tbody>
-                </table>
-            </section>
-        </main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th>Serial</th>
+                    <th>Cliente</th>
+                    <th>Parte Dañada</th>
+                    <th>Estado</th>
+                    <th>Fecha Ingreso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-items">
+                <!-- Los registros se cargarán aquí -->
+            </tbody>
+        </table>
 
-        <footer>
-            <p>Sistema de Reparaciones © <span id="current-year"></span> | Última actualización: <span id="last-update"></span></p>
-        </footer>
-    </div>
-
-    <!-- Modal para reparaciones -->
-    <div id="item-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modal-title">Registro</h2>
-            <form id="item-form">
-                <input type="hidden" id="item-id">
-                <div class="form-row">
+        <!-- Modal para agregar/editar reparaciones -->
+        <div id="item-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal" data-modal="item-modal" style="float: right; cursor: pointer; font-size: 24px;">&times;</span>
+                <h2 id="modal-title">Agregar Reparación</h2>
+                <form id="item-form">
+                    <input type="hidden" id="item-id">
                     <div class="form-group">
                         <label for="item-model">Modelo</label>
                         <input type="text" id="item-model" required>
@@ -424,586 +362,628 @@
                         <label for="item-serial">Serial</label>
                         <input type="text" id="item-serial" required>
                     </div>
-                </div>
-                
-                <div class="form-row">
                     <div class="form-group">
                         <label for="item-client">Cliente</label>
                         <input type="text" id="item-client" required>
                     </div>
                     <div class="form-group">
-                        <label for="item-case">Caso</label>
-                        <input type="text" id="item-case" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="item-issue">Falla Reportada</label>
-                    <textarea id="item-issue" rows="3" required></textarea>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="item-damaged">Parte Dañada</label>
-                        <select id="item-damaged" required>
-                            <option value="">Seleccione una opción</option>
-                            <option value="Board">Board</option>
-                            <option value="Teclado">Teclado</option>
+                        <label for="item-damaged-part">Parte dañada</label>
+                        <select id="item-damaged-part" required>
                             <option value="Pantalla">Pantalla</option>
-                            <option value="Touchpad">Touchpad</option>
-                            <option value="Camara">Cámara</option>
-                            <option value="Parlantes">Parlantes</option>
-                            <option value="Disco">Disco</option>
-                            <option value="Puerto Usb">Puerto USB</option>
-                            <option value="Hdmi">HDMI</option>
-                            <option value="Displayport">DisplayPort</option>
-                            <option value="Puerto Tipo C">Puerto Tipo C</option>
-                            <option value="Puerto de Carga">Puerto de Carga</option>
+                            <option value="Batería">Batería</option>
+                            <option value="Placa base">Placa base</option>
+                            <option value="Conector de carga">Conector de carga</option>
+                            <option value="Botones">Botones</option>
+                            <option value="Otro">Otro</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="item-date">Fecha Registro</label>
+                        <label for="item-status">Estado</label>
+                        <select id="item-status" required>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Completo">Completo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="item-date">Fecha de ingreso</label>
                         <input type="date" id="item-date" required>
                     </div>
+                    <div class="form-group">
+                        <label for="item-notes">Notas</label>
+                        <textarea id="item-notes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para estadísticas -->
+        <div id="stats-modal" class="modal">
+            <div class="modal-content" style="max-width: 800px;">
+                <span class="close-modal" data-modal="stats-modal" style="float: right; cursor: pointer; font-size: 24px;">&times;</span>
+                <h2><i class="fas fa-chart-pie"></i> Estadísticas de Reparaciones</h2>
+                <div class="chart-container">
+                    <canvas id="damageChart"></canvas>
                 </div>
-                
-                <div class="form-group">
-                    <label for="item-notes">Estado</label>
-                    <select id="item-notes" required>
-                        <option value="">Seleccione estado</option>
-                        <option value="Completo">Completo</option>
-                        <option value="Pendiente">Pendiente</option>
-                    </select>
-                </div>
-                
-                <button type="submit" class="btn primary">Guardar</button>
-            </form>
+            </div>
         </div>
     </div>
 
     <script>
-        // Base de datos inicial para reparaciones
+        // Variables globales
         let repairs = [];
-        const STORAGE_KEY = 'repairs_nes_data';
+        const STORAGE_KEY = 'repairs_data';
+        const CONFIG_KEY = 'github_config';
+        let damageChart = null;
+        let githubConfig = {
+            owner: '',
+            repo: '',
+            token: ''
+        };
 
         // Elementos del DOM
         const repairsTable = document.getElementById('inventory-items');
-        const searchInput = document.getElementById('search');
         const addButton = document.getElementById('add-item');
-        const printButton = document.getElementById('print-list');
-        const exportButton = document.getElementById('export-csv');
+        const statsButton = document.getElementById('stats-btn');
         const importButton = document.getElementById('import-csv');
+        const exportButton = document.getElementById('export-csv');
         const fileInput = document.getElementById('csv-file');
-        const modal = document.getElementById('item-modal');
-        const closeButton = document.querySelector('.close');
+        const itemModal = document.getElementById('item-modal');
+        const statsModal = document.getElementById('stats-modal');
         const repairForm = document.getElementById('item-form');
-        const currentYearSpan = document.getElementById('current-year');
-        const lastUpdateSpan = document.getElementById('last-update');
-        const filterWeekBtn = document.getElementById('filter-week');
-        const filterMonthBtn = document.getElementById('filter-month');
-        const filterAllBtn = document.getElementById('filter-all');
-
-        // Funciones de utilidad para fechas
-        function formatDate(dateString) {
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) {
-                    throw new Error('Fecha inválida');
-                }
-                const options = {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                };
-                return date.toLocaleDateString('es-ES', options);
-            } catch (error) {
-                console.error('Error al formatear fecha:', error);
-                return 'Fecha inválida';
-            }
-        }
-
-        function getCurrentDateTime() {
-            const now = new Date();
-            return now.toISOString().split('T')[0];
-        }
-
-        // Renderizar la tabla de reparaciones
-        function renderRepairs(items = repairs) {
-            try {
-                repairsTable.innerHTML = '';
-                
-                if (items.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td colspan="9" class="no-data">No hay reparaciones registradas</td>
-                    `;
-                    repairsTable.appendChild(row);
-                    return;
-                }
-                
-                items.forEach(repair => {
-                    const statusClass = repair.observation === 'Completo' ? 'date-recent' : 'date-old';
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${repair.model || 'N/A'}</td>
-                        <td>${repair.serial || 'N/A'}</td>
-                        <td>${repair.client || 'N/A'}</td>
-                        <td>${repair.case || 'N/A'}</td>
-                        <td class="issue-cell" title="${repair.issue || ''}">
-                            ${repair.issue ? (repair.issue.substring(0, 30) + (repair.issue.length > 30 ? '...' : '')) : 'N/A'}
-                        </td>
-                        <td>${repair.damagedPart || 'N/A'}</td>
-                        <td class="${statusClass}">${repair.observation || 'N/A'}</td>
-                        <td>${formatDate(repair.date)}</td>
-                        <td class="actions">
-                            <button class="edit" data-id="${repair.id}"><i class="fas fa-edit"></i></button>
-                            <button class="delete" data-id="${repair.id}"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
-                    
-                    repairsTable.appendChild(row);
-                });
-                
-                // Agregar eventos a los botones de acción
-                document.querySelectorAll('.edit').forEach(btn => {
-                    btn.addEventListener('click', () => editRepair(btn.dataset.id));
-                });
-                
-                document.querySelectorAll('.delete').forEach(btn => {
-                    btn.addEventListener('click', () => deleteRepair(btn.dataset.id));
-                });
-            } catch (error) {
-                console.error('Error al renderizar reparaciones:', error);
-            }
-        }
-
-        // Filtrar reparaciones
-        function filterRepairs(daysThreshold = null) {
-            try {
-                if (daysThreshold === null) {
-                    renderRepairs();
-                    return;
-                }
-                
-                const filtered = repairs.filter(repair => {
-                    const repairDate = new Date(repair.date);
-                    const today = new Date();
-                    const diffTime = today - repairDate;
-                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                    return diffDays <= daysThreshold;
-                });
-                
-                renderRepairs(filtered);
-            } catch (error) {
-                console.error('Error al filtrar reparaciones:', error);
-            }
-        }
-
-        // Guardar reparaciones en localStorage
-        function saveRepairs() {
-            try {
-                const dataToSave = JSON.stringify({
-                    repairs: repairs,
-                    lastUpdate: new Date().toISOString()
-                });
-                
-                localStorage.setItem(STORAGE_KEY, dataToSave);
-                sessionStorage.setItem(STORAGE_KEY, dataToSave); // Backup
-                lastUpdateSpan.textContent = formatDate(new Date());
-                console.log('Datos guardados correctamente');
-            } catch (error) {
-                console.error('Error al guardar reparaciones:', error);
-                if (error.name === 'QuotaExceededError') {
-                    alert('Advertencia: Se ha excedido el espacio de almacenamiento. Algunos datos podrían no guardarse.');
-                }
-            }
-        }
-
-        // Cargar reparaciones desde localStorage
-        function loadRepairs() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    const parsedData = JSON.parse(saved);
-                    repairs = parsedData.repairs || [];
-                    if (parsedData.lastUpdate) {
-                        lastUpdateSpan.textContent = formatDate(parsedData.lastUpdate);
-                    }
-                    console.log('Datos cargados correctamente');
-                } else {
-                    // Datos de ejemplo si no hay nada guardado
-                    repairs = [{
-                        id: "REP-" + Date.now().toString().slice(-4),
-                        model: "Ejemplo Modelo",
-                        serial: "ABC123XYZ",
-                        client: "Cliente Ejemplo",
-                        case: "Caso de prueba",
-                        issue: "Falla de ejemplo para demostración",
-                        damagedPart: "Board",
-                        observation: "Pendiente",
-                        date: getCurrentDateTime()
-                    }];
-                    saveRepairs();
-                }
-            } catch (error) {
-                console.error('Error al cargar reparaciones:', error);
-                repairs = [];
-            }
-        }
-
-        // Editar reparación
-        function editRepair(id) {
-            try {
-                const repair = repairs.find(repair => repair.id === id);
-                if (!repair) {
-                    console.error('Reparación no encontrada:', id);
-                    return;
-                }
-                
-                document.getElementById('modal-title').textContent = 'Editar Reparación';
-                document.getElementById('item-id').value = repair.id;
-                document.getElementById('item-model').value = repair.model || '';
-                document.getElementById('item-serial').value = repair.serial || '';
-                document.getElementById('item-client').value = repair.client || '';
-                document.getElementById('item-case').value = repair.case || '';
-                document.getElementById('item-issue').value = repair.issue || '';
-                document.getElementById('item-damaged').value = repair.damagedPart || '';
-                document.getElementById('item-notes').value = repair.observation || '';
-                document.getElementById('item-date').value = repair.date ? repair.date.slice(0, 10) : getCurrentDateTime();
-                
-                modal.style.display = 'block';
-            } catch (error) {
-                console.error('Error al editar reparación:', error);
-            }
-        }
-
-        // Eliminar reparación
-        function deleteRepair(id) {
-            try {
-                if (confirm('¿Estás seguro de eliminar este registro de reparación?')) {
-                    repairs = repairs.filter(repair => repair.id !== id);
-                    saveRepairs();
-                    renderRepairs();
-                }
-            } catch (error) {
-                console.error('Error al eliminar reparación:', error);
-            }
-        }
-
-        // Exportar a CSV
-        function exportToCSV() {
-            try {
-                let csv = 'Modelo,Serial,Cliente,Caso,Falla,Parte Dañada,Estado,Fecha Registro\n';
-                
-                repairs.forEach(repair => {
-                    // Escapar comillas en los valores
-                    const escapeCsv = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
-                    
-                    csv += [
-                        escapeCsv(repair.model),
-                        escapeCsv(repair.serial),
-                        escapeCsv(repair.client),
-                        escapeCsv(repair.case),
-                        escapeCsv(repair.issue),
-                        escapeCsv(repair.damagedPart),
-                        escapeCsv(repair.observation),
-                        escapeCsv(formatDate(repair.date))
-                    ].join(',') + '\n';
-                });
-                
-                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.setAttribute('href', url);
-                link.setAttribute('download', `reparaciones_nes_${new Date().toISOString().slice(0,10)}.csv`);
-                link.style.visibility = 'hidden';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (error) {
-                console.error('Error al exportar a CSV:', error);
-                alert('Error al generar el archivo CSV');
-            }
-        }
-
-        // Función para analizar el CSV (mejorada para manejar comillas)
-        function parseCSV(csvString) {
-            const lines = csvString.split('\n').filter(line => line.trim());
-            if (lines.length < 2) {
-                throw new Error('El archivo CSV está vacío o no tiene el formato correcto');
-            }
-            
-            // Obtener cabeceras limpiando comillas y espacios
-            const headers = lines[0].split(',').map(h => 
-                h.trim().replace(/^"(.*)"$/, '$1').replace(/""/g, '"').toLowerCase()
-            );
-            
-            // Validar cabeceras mínimas requeridas
-            const requiredHeaders = ['modelo', 'serial', 'cliente'];
-            const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
-            
-            if (missingHeaders.length > 0) {
-                throw new Error(`Faltan columnas requeridas: ${missingHeaders.join(', ')}`);
-            }
-            
-            // Procesar líneas de datos
-            const results = [];
-            
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                
-                // Dividir la línea considerando comas dentro de campos entrecomillados
-                const currentLine = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-                const entry = {};
-                
-                for (let j = 0; j < headers.length; j++) {
-                    if (j < currentLine.length) {
-                        // Limpiar comillas y espacios
-                        let value = currentLine[j].trim();
-                        // Eliminar comillas exteriores si existen
-                        if (value.startsWith('"') && value.endsWith('"')) {
-                            value = value.substring(1, value.length - 1);
-                        }
-                        // Reemplazar comillas dobles por simples
-                        value = value.replace(/""/g, '"');
-                        entry[headers[j]] = value;
-                    } else {
-                        entry[headers[j]] = '';
-                    }
-                }
-                
-                // Mapear a nuestra estructura de datos
-                results.push({
-                    id: `IMP-${Date.now()}-${i}`,
-                    model: entry.modelo || '',
-                    serial: entry.serial || '',
-                    client: entry.cliente || '',
-                    case: entry.caso || 'Importado',
-                    issue: entry.falla || entry.issue || 'Sin descripción',
-                    damagedPart: entry['parte dañada'] || entry.parte || 'Board',
-                    observation: entry.estado || entry.observation || 'Pendiente',
-                    date: entry.fecha || getCurrentDateTime()
-                });
-            }
-            
-            return results;
-        }
-
-        // Función para validar datos importados
-        function validateImportedData(data) {
-            const errors = [];
-            
-            data.forEach((item, index) => {
-                if (!item.model || !item.serial || !item.client) {
-                    errors.push(`Fila ${index + 1}: Faltan datos requeridos (modelo, serial o cliente)`);
-                }
-                
-                if (item.serial && repairs.some(r => r.serial === item.serial)) {
-                    errors.push(`Fila ${index + 1}: El serial ${item.serial} ya existe`);
-                }
-            });
-            
-            if (errors.length > 0) {
-                throw new Error(`Errores de validación:\n${errors.join('\n')}`);
-            }
-        }
-
-        // Función para fusionar datos importados
-        function mergeImportedData(newData) {
-            // Filtrar duplicados por serial
-            const uniqueNewData = newData.filter(newItem => 
-                !repairs.some(existingItem => existingItem.serial === newItem.serial)
-            );
-            
-            repairs = [...repairs, ...uniqueNewData];
-        }
-
-        // Configurar la importación de CSV
-        function setupCSVImport() {
-            importButton.addEventListener('click', () => {
-                fileInput.click();
-            });
-            
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                const progressDiv = document.createElement('div');
-                progressDiv.id = 'import-progress';
-                progressDiv.innerHTML = `
-                    <p>Procesando archivo...</p>
-                    <div class="progress-bar">
-                        <div class="progress-bar-fill" style="width: 0%"></div>
-                    </div>
-                    <div id="import-result"></div>
-                `;
-                importButton.insertAdjacentElement('afterend', progressDiv);
-                
-                progressDiv.style.display = 'block';
-                const progressBar = progressDiv.querySelector('.progress-bar-fill');
-                const resultDiv = document.getElementById('import-result');
-                resultDiv.style.display = 'none';
-                
-                const reader = new FileReader();
-                
-                reader.onload = (event) => {
-                    try {
-                        progressBar.style.width = '30%';
-                        const csvData = event.target.result;
-                        const parsedData = parseCSV(csvData);
-                        
-                        progressBar.style.width = '60%';
-                        validateImportedData(parsedData);
-                        
-                        progressBar.style.width = '80%';
-                        mergeImportedData(parsedData);
-                        
-                        progressBar.style.width = '100%';
-                        resultDiv.className = 'success';
-                        resultDiv.innerHTML = `
-                            <p><i class="fas fa-check-circle"></i> Importación exitosa!</p>
-                            <p>Se importaron ${parsedData.length} registros.</p>
-                        `;
-                        resultDiv.style.display = 'block';
-                        
-                        renderRepairs();
-                        saveRepairs();
-                        fileInput.value = '';
-                        
-                        setTimeout(() => {
-                            progressDiv.style.display = 'none';
-                        }, 3000);
-                        
-                    } catch (error) {
-                        progressBar.style.width = '100%';
-                        resultDiv.className = 'error';
-                        resultDiv.innerHTML = `
-                            <p><i class="fas fa-exclamation-triangle"></i> Error en importación</p>
-                            <p>${error.message}</p>
-                        `;
-                        resultDiv.style.display = 'block';
-                        console.error('Error al importar CSV:', error);
-                    }
-                };
-                
-                reader.onerror = () => {
-                    progressBar.style.width = '100%';
-                    resultDiv.className = 'error';
-                    resultDiv.innerHTML = '<p>Error al leer el archivo</p>';
-                    resultDiv.style.display = 'block';
-                };
-                
-                reader.readAsText(file);
-            });
-        }
-
-        // Manejar el formulario
-        repairForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            try {
-                const repairData = {
-                    id: document.getElementById('item-id').value || `REP-${Date.now().toString().slice(-4)}`,
-                    model: document.getElementById('item-model').value.trim(),
-                    serial: document.getElementById('item-serial').value.trim(),
-                    client: document.getElementById('item-client').value.trim(),
-                    case: document.getElementById('item-case').value.trim(),
-                    issue: document.getElementById('item-issue').value.trim(),
-                    damagedPart: document.getElementById('item-damaged').value,
-                    observation: document.getElementById('item-notes').value,
-                    date: document.getElementById('item-date').value || getCurrentDateTime()
-                };
-                
-                // Validación básica
-                if (!repairData.model || !repairData.serial || !repairData.client || 
-                    !repairData.damagedPart || !repairData.observation) {
-                    alert('Por favor complete todos los campos obligatorios');
-                    return;
-                }
-                
-                const existingId = document.getElementById('item-id').value;
-                
-                if (existingId) {
-                    // Actualizar reparación existente
-                    const index = repairs.findIndex(repair => repair.id === existingId);
-                    if (index !== -1) {
-                        repairs[index] = repairData;
-                    }
-                } else {
-                    // Añadir nueva reparación
-                    repairs.push(repairData);
-                }
-                
-                saveRepairs();
-                renderRepairs();
-                modal.style.display = 'none';
-            } catch (error) {
-                console.error('Error al procesar el formulario:', error);
-                alert('Ocurrió un error al guardar los datos');
-            }
-        });
-
-        // Event Listeners
-        addButton.addEventListener('click', () => {
-            document.getElementById('modal-title').textContent = 'Registro';
-            repairForm.reset();
-            document.getElementById('item-id').value = '';
-            document.getElementById('item-date').value = getCurrentDateTime();
-            modal.style.display = 'block';
-        });
-
-        closeButton.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        searchInput.addEventListener('input', (e) => {
-            try {
-                const searchTerm = e.target.value.toLowerCase();
-                const filtered = repairs.filter(repair => 
-                    (repair.model && repair.model.toLowerCase().includes(searchTerm)) || 
-                    (repair.serial && repair.serial.toLowerCase().includes(searchTerm)) ||
-                    (repair.client && repair.client.toLowerCase().includes(searchTerm)) ||
-                    (repair.case && repair.case.toLowerCase().includes(searchTerm)) ||
-                    (repair.issue && repair.issue.toLowerCase().includes(searchTerm)) ||
-                    (repair.observation && repair.observation.toLowerCase().includes(searchTerm))
-                );
-                renderRepairs(filtered);
-            } catch (error) {
-                console.error('Error al buscar:', error);
-            }
-        });
-
-        printButton.addEventListener('click', () => {
-            window.print();
-        });
-
-        exportButton.addEventListener('click', exportToCSV);
-
-        filterWeekBtn.addEventListener('click', () => filterRepairs(7));
-        filterMonthBtn.addEventListener('click', () => filterRepairs(30));
-        filterAllBtn.addEventListener('click', () => filterRepairs(null));
+        const closeModals = document.querySelectorAll('.close-modal');
+        const searchInput = document.getElementById('search');
+        const configPanel = document.getElementById('config-panel');
+        const saveConfigBtn = document.getElementById('save-config');
+        const githubOwnerInput = document.getElementById('github-owner');
+        const githubRepoInput = document.getElementById('github-repo');
+        const githubTokenInput = document.getElementById('github-token');
+        const configStatus = document.getElementById('config-status');
+        const syncStatus = document.getElementById('sync-status');
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
-            currentYearSpan.textContent = new Date().getFullYear();
-            loadRepairs();
-            renderRepairs();
-            setupCSVImport();
+            loadConfig();
+            setupEventListeners();
             
-            if (typeof(Storage) === 'undefined') {
-                alert('Advertencia: Tu navegador no soporta localStorage. Los datos solo se guardarán durante esta sesión.');
+            // Verificar si la configuración está completa
+            if (githubConfig.owner && githubConfig.repo && githubConfig.token) {
+                loadDataFromGitHub();
+            } else {
+                showMessage(configStatus, 'Por favor, complete la configuración de GitHub para habilitar la sincronización.', 'error');
+                loadFromLocalStorage();
+            }
+        });
+
+        function loadConfig() {
+            const config = localStorage.getItem(CONFIG_KEY);
+            if (config) {
+                githubConfig = JSON.parse(config);
+                githubOwnerInput.value = githubConfig.owner;
+                githubRepoInput.value = githubConfig.repo;
+                githubTokenInput.value = githubConfig.token;
+            }
+        }
+
+        function saveConfig() {
+            githubConfig = {
+                owner: githubOwnerInput.value.trim(),
+                repo: githubRepoInput.value.trim(),
+                token: githubTokenInput.value.trim()
+            };
+            
+            if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+                showMessage(configStatus, 'Todos los campos son requeridos', 'error');
+                return;
             }
             
-            window.addEventListener('beforeunload', function() {
-                saveRepairs();
+            localStorage.setItem(CONFIG_KEY, JSON.stringify(githubConfig));
+            showMessage(configStatus, 'Configuración guardada correctamente. Cargando datos...', 'success');
+            
+            // Ocultar el panel después de 2 segundos y cargar datos
+            setTimeout(() => {
+                configPanel.style.display = 'none';
+                loadDataFromGitHub();
+            }, 2000);
+        }
+
+        async function loadDataFromGitHub() {
+            if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+                showMessage(syncStatus, 'Configuración de GitHub incompleta. Usando datos locales.', 'error');
+                loadFromLocalStorage();
+                return;
+            }
+            
+            showMessage(syncStatus, 'Cargando datos desde GitHub...', 'info');
+            
+            try {
+                const response = await fetch(
+                    `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data.json`,
+                    {
+                        headers: {
+                            'Authorization': `token ${githubConfig.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        // El archivo no existe, crearemos uno nuevo al guardar
+                        showMessage(syncStatus, 'No se encontró archivo de datos. Se creará uno nuevo al guardar.', 'info');
+                        loadFromLocalStorage();
+                        return;
+                    }
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const content = JSON.parse(atob(data.content));
+                repairs = content.reparaciones || [];
+                renderRepairs();
+                showMessage(syncStatus, 'Datos cargados correctamente desde GitHub.', 'success');
+                saveToLocalStorage(); // Guardar localmente como respaldo
+                
+            } catch (error) {
+                console.error('Error al cargar datos de GitHub:', error);
+                showMessage(syncStatus, `Error al cargar datos: ${error.message}. Usando datos locales.`, 'error');
+                loadFromLocalStorage();
+            }
+        }
+
+        async function saveDataToGitHub() {
+            if (!githubConfig.owner || !githubConfig.repo || !githubConfig.token) {
+                showMessage(syncStatus, 'Configuración de GitHub incompleta. Guardando localmente.', 'error');
+                saveToLocalStorage();
+                return;
+            }
+            
+            showMessage(syncStatus, 'Sincronizando con GitHub...', 'info');
+            
+            try {
+                // Primero obtén el SHA del archivo actual si existe
+                let sha = '';
+                try {
+                    const getResponse = await fetch(
+                        `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data.json`,
+                        {
+                            headers: {
+                                'Authorization': `token ${githubConfig.token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        }
+                    );
+                    
+                    if (getResponse.ok) {
+                        const fileData = await getResponse.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    console.log('Archivo no existe aún, se creará uno nuevo');
+                }
+                
+                // Prepara los datos para guardar
+                const content = {
+                    reparaciones: repairs
+                };
+                
+                const message = `Actualización de datos ${new Date().toISOString()}`;
+                const contentEncoded = btoa(JSON.stringify(content, null, 2));
+                
+                const response = await fetch(
+                    `https://api.github.com/repos/${githubConfig.owner}/${githubConfig.repo}/contents/data.json`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${githubConfig.token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            content: contentEncoded,
+                            sha: sha || undefined
+                        })
+                    }
+                );
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Error al guardar en GitHub');
+                }
+                
+                console.log('Datos guardados en GitHub correctamente');
+                showMessage(syncStatus, 'Datos sincronizados con GitHub correctamente.', 'success');
+                saveToLocalStorage(); // También guarda localmente como respaldo
+                
+            } catch (error) {
+                console.error('Error al guardar en GitHub:', error);
+                showMessage(syncStatus, `Error al sincronizar: ${error.message}. Guardando localmente.`, 'error');
+                saveToLocalStorage(); // Si falla GitHub, guarda solo localmente
+            }
+        }
+
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = 'status-message';
+            if (type === 'success') {
+                element.classList.add('status-success');
+            } else if (type === 'error') {
+                element.classList.add('status-error');
+            } else {
+                element.style.display = 'block';
+                element.style.backgroundColor = '#e2e3e5';
+                element.style.color = '#383d41';
+            }
+        }
+
+        function setupEventListeners() {
+            // Botón guardar configuración
+            saveConfigBtn.addEventListener('click', saveConfig);
+            
+            // Botón agregar
+            addButton.addEventListener('click', () => {
+                document.getElementById('modal-title').textContent = 'Agregar Reparación';
+                document.getElementById('item-id').value = '';
+                document.getElementById('item-date').valueAsDate = new Date();
+                showModal('item-modal');
             });
-        });
+
+            // Botón estadísticas
+            statsButton.addEventListener('click', showStatsModal);
+
+            // Importar CSV
+            importButton.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileImport);
+
+            // Exportar CSV
+            exportButton.addEventListener('click', exportToCSV);
+
+            // Cerrar modales
+            closeModals.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const modalId = btn.getAttribute('data-modal');
+                    hideModal(modalId);
+                });
+            });
+
+            // Clic fuera del modal para cerrar
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    const modalId = e.target.id;
+                    hideModal(modalId);
+                }
+            });
+
+            // Formulario de reparación
+            repairForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveRepair();
+            });
+
+            // Búsqueda
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                filterRepairs(searchTerm);
+            });
+        }
+
+        function saveRepair() {
+            const repairData = {
+                id: document.getElementById('item-id').value || Date.now().toString(),
+                model: document.getElementById('item-model').value,
+                serial: document.getElementById('item-serial').value,
+                client: document.getElementById('item-client').value,
+                damagedPart: document.getElementById('item-damaged-part').value,
+                status: document.getElementById('item-status').value,
+                date: document.getElementById('item-date').value,
+                notes: document.getElementById('item-notes').value
+            };
+
+            // Validación básica
+            if (!repairData.model || !repairData.serial || !repairData.client || 
+                !repairData.damagedPart || !repairData.status || !repairData.date) {
+                showMessage(syncStatus, 'Por favor complete todos los campos requeridos', 'error');
+                return;
+            }
+
+            if (document.getElementById('item-id').value) {
+                // Editar reparación existente
+                const index = repairs.findIndex(r => r.id === repairData.id);
+                if (index !== -1) {
+                    repairs[index] = repairData;
+                    showMessage(syncStatus, 'Reparación actualizada correctamente', 'success');
+                }
+            } else {
+                // Nueva reparación
+                repairs.push(repairData);
+                showMessage(syncStatus, 'Reparación agregada correctamente', 'success');
+            }
+
+            saveDataToGitHub();
+            renderRepairs();
+            hideModal('item-modal');
+        }
+
+        function editRepair(id) {
+            const repair = repairs.find(r => r.id === id);
+            if (repair) {
+                document.getElementById('item-id').value = repair.id;
+                document.getElementById('item-model').value = repair.model;
+                document.getElementById('item-serial').value = repair.serial;
+                document.getElementById('item-client').value = repair.client;
+                document.getElementById('item-damaged-part').value = repair.damagedPart;
+                document.getElementById('item-status').value = repair.status;
+                document.getElementById('item-date').value = repair.date;
+                document.getElementById('item-notes').value = repair.notes || '';
+                document.getElementById('modal-title').textContent = 'Editar Reparación';
+                showModal('item-modal');
+            }
+        }
+
+        function deleteRepair(id) {
+            if (confirm('¿Estás seguro de eliminar esta reparación?')) {
+                repairs = repairs.filter(r => r.id !== id);
+                saveDataToGitHub();
+                renderRepairs();
+                showMessage(syncStatus, 'Reparación eliminada correctamente', 'success');
+            }
+        }
+
+        function renderRepairs(repairsToRender = null) {
+            const data = repairsToRender || repairs;
+            repairsTable.innerHTML = '';
+            
+            if (data.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="7" class="no-data">No hay reparaciones registradas</td>`;
+                repairsTable.appendChild(row);
+                return;
+            }
+            
+            // Ordenar por fecha más reciente primero
+            const sortedRepairs = [...data].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedRepairs.forEach(repair => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${repair.model}</td>
+                    <td>${repair.serial}</td>
+                    <td>${repair.client}</td>
+                    <td>${repair.damagedPart}</td>
+                    <td><span class="status-badge" style="background-color: ${getStatusColor(repair.status)}">${repair.status}</span></td>
+                    <td>${formatDate(repair.date)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn edit-btn" data-id="${repair.id}" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete-btn" data-id="${repair.id}" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                repairsTable.appendChild(row);
+            });
+
+            // Agregar eventos a los botones
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => editRepair(btn.dataset.id));
+            });
+
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteRepair(btn.dataset.id));
+            });
+        }
+
+        function filterRepairs(searchTerm) {
+            if (searchTerm === '') {
+                renderRepairs();
+                return;
+            }
+
+            const filtered = repairs.filter(repair => 
+                repair.model.toLowerCase().includes(searchTerm) ||
+                repair.serial.toLowerCase().includes(searchTerm) ||
+                repair.client.toLowerCase().includes(searchTerm) ||
+                repair.damagedPart.toLowerCase().includes(searchTerm) ||
+                repair.status.toLowerCase().includes(searchTerm) ||
+                repair.date.toLowerCase().includes(searchTerm) ||
+                (repair.notes && repair.notes.toLowerCase().includes(searchTerm))
+            );
+
+            renderRepairs(filtered);
+        }
+
+        function showStatsModal() {
+            updateStatsChart();
+            showModal('stats-modal');
+        }
+
+        function updateStatsChart() {
+            // Calcular estadísticas de partes dañadas
+            const partCounts = {};
+            repairs.forEach(repair => {
+                partCounts[repair.damagedPart] = (partCounts[repair.damagedPart] || 0) + 1;
+            });
+
+            const labels = Object.keys(partCounts);
+            const data = Object.values(partCounts);
+            
+            // Crear o actualizar gráfico
+            const ctx = document.getElementById('damageChart').getContext('2d');
+            
+            if (damageChart) {
+                damageChart.destroy();
+            }
+            
+            damageChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Reparaciones por parte dañada',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function handleFileImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const csvData = event.target.result;
+                    const lines = csvData.split('\n').filter(line => line.trim());
+                    
+                    // Obtener cabeceras
+                    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                    
+                    // Validar cabeceras mínimas
+                    const requiredHeaders = ['modelo', 'serial', 'cliente'];
+                    if (!requiredHeaders.every(h => headers.includes(h))) {
+                        throw new Error('El archivo CSV debe contener al menos las columnas: modelo, serial, cliente');
+                    }
+                    
+                    // Procesar líneas de datos
+                    const newRepairs = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].split(',');
+                        const repair = {
+                            id: Date.now() + i,
+                            model: values[headers.indexOf('modelo')]?.trim() || 'Desconocido',
+                            serial: values[headers.indexOf('serial')]?.trim() || 'N/A',
+                            client: values[headers.indexOf('cliente')]?.trim() || 'Anónimo',
+                            damagedPart: values[headers.indexOf('parte dañada')]?.trim() || 'Otro',
+                            status: values[headers.indexOf('estado')]?.trim() || 'Pendiente',
+                            date: values[headers.indexOf('fecha')]?.trim() || new Date().toISOString().split('T')[0],
+                            notes: values[headers.indexOf('notas')]?.trim() || ''
+                        };
+                        newRepairs.push(repair);
+                    }
+                    
+                    repairs = [...repairs, ...newRepairs];
+                    saveDataToGitHub();
+                    renderRepairs();
+                    showMessage(syncStatus, `Se importaron ${newRepairs.length} reparaciones`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error al importar CSV:', error);
+                    showMessage(syncStatus, `Error al importar: ${error.message}`, 'error');
+                } finally {
+                    fileInput.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportToCSV() {
+            if (repairs.length === 0) {
+                showMessage(syncStatus, 'No hay reparaciones para exportar', 'error');
+                return;
+            }
+            
+            // Cabeceras CSV
+            const headers = ['Modelo', 'Serial', 'Cliente', 'Parte Dañada', 'Estado', 'Fecha', 'Notas'];
+            
+            // Datos CSV
+            const csvRows = [];
+            csvRows.push(headers.join(','));
+            
+            repairs.forEach(repair => {
+                const row = [
+                    `"${repair.model.replace(/"/g, '""')}"`,
+                    `"${repair.serial.replace(/"/g, '""')}"`,
+                    `"${repair.client.replace(/"/g, '""')}"`,
+                    `"${repair.damagedPart.replace(/"/g, '""')}"`,
+                    `"${repair.status.replace(/"/g, '""')}"`,
+                    `"${repair.date}"`,
+                    `"${(repair.notes || '').replace(/"/g, '""')}"`
+                ];
+                csvRows.push(row.join(','));
+            });
+            
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `reparaciones_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage(syncStatus, 'Exportación completada correctamente', 'success');
+        }
+
+        function getStatusColor(status) {
+            return status === 'Completo' ? '#27ae60' : '#f39c12';
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('es-ES', options);
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(repairs));
+        }
+
+        function loadFromLocalStorage() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (data) {
+                repairs = JSON.parse(data);
+                renderRepairs();
+            }
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'item-modal') {
+                repairForm.reset();
+            }
+        }
     </script>
 </body>
 </html>
